@@ -19,17 +19,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.tablesaw.api.ColumnType.TEXT;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tech.tablesaw.api.BooleanColumn;
-import tech.tablesaw.api.DateColumn;
-import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.api.FloatColumn;
-import tech.tablesaw.api.IntColumn;
-import tech.tablesaw.api.LongColumn;
-import tech.tablesaw.api.StringColumn;
-import tech.tablesaw.api.Table;
+import tech.tablesaw.api.*;
+import tech.tablesaw.columns.Column;
 
 /** Tests for reading and writing saw files */
 class SawStorageTest {
@@ -104,6 +102,45 @@ class SawStorageTest {
       assertEquals(booleanColumn.get(i), t.booleanColumn("bool").get(i));
     }
     t.sortOn("string"); // exercise the column a bit
+  }
+
+  @Test
+  void week6hw_readNumericColumnTest() {
+    try {
+      Table wines = Table.read().csv("../data/test_wines.csv");
+      String path = SawWriter.saveTable(tempDir + "/mytables2", wines);
+      Path sawPath = Paths.get(path);
+      TableMetadata metadata = SawReader.week6hw_getTableMetadata(sawPath);
+      List<ColumnMetadata> columnMetadata = metadata.getColumnMetadataList();
+      int whichColumn = 0;
+      for (ColumnMetadata columnMeta : columnMetadata) {
+        Path columnPath = sawPath.resolve(columnMeta.getId());
+        Column<?> col = null;
+
+        if (columnMeta.getType().compareTo("LONG") == 0) {  // Test long column case
+          col = (LongColumn) SawReader.<LongColumn, Long>week6hw_readNumericColumn(
+                  columnPath.toString(), columnMeta);
+        } else if (columnMeta.getType().compareTo("SHORT") == 0) {  // Test short column case
+          col = (ShortColumn) SawReader.<ShortColumn, Short>week6hw_readNumericColumn(
+                  columnPath.toString(), columnMeta);
+        } else if (columnMeta.getType().compareTo("INTEGER") == 0) {  // Test integer column case
+          col = (IntColumn) SawReader.<IntColumn, Integer>week6hw_readNumericColumn(
+                  columnPath.toString(), columnMeta);
+        } else if (columnMeta.getType().compareTo("DOUBLE") == 0) {  // Test double column case
+          col = (DoubleColumn) SawReader.<DoubleColumn, Double>week6hw_readNumericColumn(
+                  columnPath.toString(), columnMeta);
+        }
+        if (col != null) {
+          assertEquals(wines.column(whichColumn).size(), col.size()); // assert column size
+          for (int row = 0; row < col.size(); ++row) {
+            assertEquals(wines.column(whichColumn).get(row), col.get(row)); // assert cell
+          }
+        }
+        whichColumn++;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
