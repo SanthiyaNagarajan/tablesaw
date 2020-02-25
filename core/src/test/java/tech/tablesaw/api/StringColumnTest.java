@@ -14,7 +14,9 @@
 
 package tech.tablesaw.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static tech.tablesaw.columns.strings.StringPredicates.isEqualToIgnoringCase;
 
 import java.util.Arrays;
@@ -22,7 +24,11 @@ import java.util.List;
 import java.util.function.Function;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import tech.tablesaw.TestDataUtil;
+import tech.tablesaw.columns.strings.ByteDictionaryMap;
+import tech.tablesaw.columns.strings.DictionaryMap;
 import tech.tablesaw.columns.strings.StringColumnFormatter;
 import tech.tablesaw.selection.Selection;
 
@@ -30,12 +36,41 @@ class StringColumnTest {
 
   private final StringColumn column = StringColumn.create("testing");
 
+  @Spy StringColumn column2;
+  // defined by Testing....
+  private DictionaryMap lookUpTable;
+
   @BeforeEach
   void setUp() {
     column.append("Value 1");
     column.append("Value 2");
     column.append("Value 3");
     column.append("Value 4");
+
+    // defined by Testing...
+    lookUpTable = mock(ByteDictionaryMap.class);
+    // column2 = StringColumn.create("cars", new String[]{"", "", "audi", "volkswagen", "nissan"});
+    column2 = StringColumn.createInternal("cars", lookUpTable);
+    column2.append("");
+    column2.append("");
+    column2.append("audi");
+    MockitoAnnotations.initMocks(this);
+  }
+
+  @Test
+  public void countMissingWithTwoMissingValuesInColumn() {
+
+    when(lookUpTable.countMissing()).thenReturn(2);
+    assertThat(column2.countMissing()).isEqualTo(2);
+    verify(lookUpTable, times(1)).countMissing();
+  }
+
+  @Test
+  public void testIsMissingRowInColumn() {
+
+    when(lookUpTable.isMissing(0)).thenReturn(true);
+    assertThat(column2.isMissing(0)).isEqualTo(true);
+    verify(lookUpTable, times(1)).isMissing(0);
   }
 
   /*
