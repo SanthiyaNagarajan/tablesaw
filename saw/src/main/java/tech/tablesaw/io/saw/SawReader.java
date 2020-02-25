@@ -36,19 +36,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.iq80.snappy.SnappyFramedInputStream;
-import tech.tablesaw.api.BooleanColumn;
-import tech.tablesaw.api.DateColumn;
-import tech.tablesaw.api.DateTimeColumn;
-import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.api.FloatColumn;
-import tech.tablesaw.api.InstantColumn;
-import tech.tablesaw.api.IntColumn;
-import tech.tablesaw.api.LongColumn;
-import tech.tablesaw.api.ShortColumn;
-import tech.tablesaw.api.StringColumn;
-import tech.tablesaw.api.Table;
-import tech.tablesaw.api.TextColumn;
-import tech.tablesaw.api.TimeColumn;
+import tech.tablesaw.api.*;
 import tech.tablesaw.columns.Column;
 import tech.tablesaw.columns.strings.ByteDictionaryMap;
 import tech.tablesaw.columns.strings.DictionaryMap;
@@ -63,6 +51,15 @@ public class SawReader {
   public static Table readTable(String path) {
     Path sawPath = Paths.get(path);
     return readTable(sawPath.toFile());
+  }
+
+  public static TableMetadata week6hw_getTableMetadata(Path sawPath) {
+    try {
+      return readTableMetadata(sawPath.resolve(METADATA_FILE_NAME));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   /**
@@ -161,6 +158,58 @@ public class SawReader {
       default:
         throw new IllegalStateException("Unhandled column type writing columns: " + typeString);
     }
+  }
+
+  private static <ColumnType extends NumberColumn<ColumnType, BaseType>, BaseType extends Number>
+  NumberColumn<ColumnType, BaseType> createColumn(ColumnMetadata metadata) {
+    if (metadata.getType().compareTo("FLOAT") == 0) {
+      return (NumberColumn<ColumnType, BaseType>) FloatColumn.create(metadata.getName());
+    } else if (metadata.getType().compareTo("INTEGER") == 0) {
+      return (NumberColumn<ColumnType, BaseType>) IntColumn.create(metadata.getName());
+    } else if (metadata.getType().compareTo("SHORT") == 0) {
+      return (NumberColumn<ColumnType, BaseType>) ShortColumn.create(metadata.getName());
+    } else if (metadata.getType().compareTo("LONG") == 0) {
+      return (NumberColumn<ColumnType, BaseType>) LongColumn.create(metadata.getName());
+    } else {
+      return (NumberColumn<ColumnType, BaseType>) DoubleColumn.create(metadata.getName());
+    }
+  }
+
+
+  private static Object readData(String classType, DataInputStream dis) throws IOException {
+    switch (classType) {
+      case FLOAT:
+        return (Object) dis.readFloat();
+      case DOUBLE:
+        return (Object) dis.readDouble();
+      case INTEGER:
+        return (Object) dis.readInt();
+      case SHORT:
+        return (Object) dis.readShort();
+      case LONG:
+        return (Object) dis.readLong();
+      default:
+        return null;
+    }
+  }
+
+  public static <ColumnType extends NumberColumn<ColumnType, BaseType>, BaseType extends Number>
+  NumberColumn<ColumnType, BaseType> week6hw_readNumericColumn(String fileName, ColumnMetadata metadata) throws IOException {
+    NumberColumn<ColumnType, BaseType> columns = createColumn(metadata);
+    try (FileInputStream fis = new FileInputStream(fileName);
+         SnappyFramedInputStream sis = new SnappyFramedInputStream(fis, true);
+         DataInputStream dis = new DataInputStream(sis)) {
+      boolean EOF = false;
+      while (!EOF) {
+        try {
+          BaseType cell = (BaseType) readData(metadata.getType(), dis);
+          columns.append(cell);
+        } catch (EOFException e) {
+          EOF = true;
+        }
+      }
+    }
+    return columns;
   }
 
   private static FloatColumn readFloatColumn(String fileName, ColumnMetadata metadata)
