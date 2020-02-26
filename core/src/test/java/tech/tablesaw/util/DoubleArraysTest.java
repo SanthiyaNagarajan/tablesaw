@@ -16,10 +16,13 @@ package tech.tablesaw.util;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import tech.tablesaw.api.DoubleColumn;
+import tech.tablesaw.api.NumericColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.table.TableSliceGroup;
 
@@ -29,8 +32,8 @@ public class DoubleArraysTest {
     public void testTo2dArray() throws Exception {
         Table table = Table.read().csv("../data/tornadoes_1950-2014.csv");
         TableSliceGroup tableSliceGroup = table.splitOn("Scale");
-        int columnNuumber = table.columnIndex("Injuries");
-        DoubleArrays.to2dArray(tableSliceGroup, columnNuumber);
+        int columnNumber = table.columnIndex("Injuries");
+        DoubleArrays.to2dArray(tableSliceGroup, columnNumber);
     }
 
     @Test
@@ -62,6 +65,22 @@ public class DoubleArraysTest {
         DoubleColumn dc2 = DoubleColumn.create("dc2", new double[]{11.11, 22.22, 33.33});
         double[][] expected = new double[][]{{1.1, 11.11}, {2.2, 22.22}, {3.3, 33.33}};
         double[][] actual = DoubleArrays.to2dArray(dc1, dc2);
+        assertTrue(Arrays.deepEquals(expected, actual));
+    }
+
+    /**
+     * to2dArray(List<NumericColumn<?>>): double[][]
+     */
+    @Test
+    public void to2dArrayTest_3() {
+        DoubleColumn dc1 = DoubleColumn.create("dc1", new double[]{1.1, 2.2, 3.3});
+        DoubleColumn dc2 = DoubleColumn.create("dc2", new double[]{11.11, 22.22, 33.33});
+        List<NumericColumn<?>> columnList = new ArrayList<>();
+        columnList.add(dc1);
+        columnList.add(dc2);
+
+        double[][] expected = new double[][]{{1.1, 11.11}, {2.2, 22.22}, {3.3, 33.33}};
+        double[][] actual = DoubleArrays.to2dArray(columnList);
         assertTrue(Arrays.deepEquals(expected, actual));
     }
 }

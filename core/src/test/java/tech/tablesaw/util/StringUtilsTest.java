@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StringUtilsTest {
 
+    /** To improve the test coverage, add the following new test cases */
     /**
      * splitByCharacterTypeCamelCase(String): String[]
      */
@@ -17,7 +18,6 @@ public class StringUtilsTest {
         assertEquals(null, actual);
     }
 
-    //TODO: figure out what this method does and complete this test case
     @Test
     public void splitByCharacterTypeCamelCaseTest() {
         String[] actual = StringUtils.splitByCharacterTypeCamelCase("hREDG1&23fhkAJhsN1321hadgNN&**&)(+=;'_");
@@ -48,6 +48,13 @@ public class StringUtilsTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void repeatTest_2() {
+        String actual = StringUtils.repeat("ha", 5);
+        String expected = "hahahahaha";
+        assertEquals(expected, actual);
+    }
+
     /**
      * join(Object[], char): String
      */
@@ -64,6 +71,17 @@ public class StringUtilsTest {
         Object[] str = new String[]{"a", "b", "c"};
         String actual = StringUtils.join(str, '*');
         String expected = "a*b*c";
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * capitalize(String): String
+     */
+    @Test
+    public void capitalize_NullStr() {
+        String str = null;
+        String actual = StringUtils.capitalize(str);
+        String expected = null;
         assertEquals(expected, actual);
     }
 }
