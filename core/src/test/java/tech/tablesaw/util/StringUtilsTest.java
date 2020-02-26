@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StringUtilsTest {
@@ -21,7 +22,8 @@ public class StringUtilsTest {
     @Test
     public void splitByCharacterTypeCamelCaseTest() {
         String[] actual = StringUtils.splitByCharacterTypeCamelCase("hREDG1&23fhkAJhsN1321hadgNN&**&)(+=;'_");
-        System.out.println(Arrays.toString(actual));
+        String[] expected = new String[] {"h", "REDG", "1", "&", "23", "fhk", "A", "Jhs", "N" , "1321", "hadg", "NN", "&**&", ")", "(", "+=", ";'", "_"};
+        assertArrayEquals(expected, actual);
     }
 
     /**
