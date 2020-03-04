@@ -1,0 +1,291 @@
+﻿bugs.txt 
+
+
+Found 31 issues
+
+
+core/src/test/java/tech/tablesaw/columns/booleans/BooleanFillersTest.java:14: error: NULL_DEREFERENCE
+  object returned by `booleans.iterator().next()` could be null and is dereferenced at line 14.
+  12.     protected void assertContentEquals(Iterable<Boolean> booleans, boolean... expected) {
+  13.       int num = 0;
+  14. >     for (boolean value : booleans) {
+  15.         assertEquals(expected[num], value);
+  16.         num++;
+
+
+core/src/test/java/tech/tablesaw/filtering/DeferredColumnTest.java:21: error: NULL_DEREFERENCE
+  object returned by `b.get(0)` could be null and is dereferenced at line 21.
+  19.                   "test", new BitmapBackedSelection().addRange(0, table.rowCount()), table.rowCount())
+  20.               .setName("b");
+  21. >     assertTrue(b.get(0));
+  22.       table.addColumns(b);
+  23.       Table t = table.where(booleanColumn("b").isTrue());
+
+
+core/src/main/java/tech/tablesaw/io/DataFrameWriter.java:44: error: RESOURCE_LEAK
+  resource of type `java.io.FileOutputStream` acquired by call to `Destination(...)` at line 44 is not released after line 44.
+  42.       String extension = Files.getFileExtension(file.getCanonicalPath());
+  43.       DataWriter<?> dataWriter = registry.getWriterForExtension(extension);
+  44. >     dataWriter.write(table, new Destination(file));
+  45.     }
+  46.   
+
+
+core/src/main/java/tech/tablesaw/columns/instant/InstantColumnFormatter.java:57: error: NULL_DEREFERENCE
+  object returned by `asInstant(value)` could be null and is dereferenced at line 57.
+  55.         return PackedInstant.toString(value);
+  56.       }
+  57. >     ZonedDateTime time = PackedInstant.asInstant(value).atZone(zoneId);
+  58.       if (time == null) {
+  59.         return "";
+
+
+core/src/test/java/tech/tablesaw/columns/AbstractColumnTest.java:60: error: NULL_DEREFERENCE
+  object returned by `dc1.get(0)` could be null and is dereferenced at line 60.
+  58.       dc1.forEach(localDate -> dc2.append(localDate.plusDays(100)));
+  59.   
+  60. >     assertEquals(dc1.get(0).plusDays(100), dc2.get(0));
+  61.     }
+  62.   }
+
+
+core/src/main/java/tech/tablesaw/io/DataFrameReader.java:56: error: RESOURCE_LEAK
+  resource of type `java.net.HttpURLConnection` acquired by call to `openConnection()` at line 55 is not released after line 56.
+  54.     public Table url(URL url) throws IOException {
+  55.       URLConnection connection = url.openConnection();
+  56. >     String contentType = connection.getContentType();
+  57.       return url(url, getCharset(contentType), getMimeType(contentType));
+  58.     }
+
+
+core/src/main/java/tech/tablesaw/io/DataFrameReader.java:56: error: RESOURCE_LEAK
+  resource of type `javax.net.ssl.HttpsURLConnection` acquired by call to `openConnection()` at line 55 is not released after line 56.
+  54.     public Table url(URL url) throws IOException {
+  55.       URLConnection connection = url.openConnection();
+  56. >     String contentType = connection.getContentType();
+  57.       return url(url, getCharset(contentType), getMimeType(contentType));
+  58.     }
+
+
+core/src/test/java/tech/tablesaw/columns/datetimes/PackedLocalDateTimeTest.java:61: error: NULL_DEREFERENCE
+  object `upacked` last assigned on line 60 could be null and is dereferenced at line 61.
+  59.       long packed = pack(dateTime.toLocalDate(), dateTime.toLocalTime());
+  60.       LocalDateTime upacked = asLocalDateTime(packed);
+  61. >     assertEquals(dateTime.getDayOfYear(), upacked.getDayOfYear());
+  62.       assertEquals(dateTime.getHour(), upacked.getHour());
+  63.       assertEquals(dateTime.getMinute(), upacked.getMinute());
+
+
+core/src/main/java/tech/tablesaw/api/BooleanColumn.java:69: error: NULL_DEREFERENCE
+  object returned by `get(r1)` could be null and is dereferenced at line 69.
+  67.     private final IntComparator comparator =
+  68.         (r1, r2) -> {
+  69. >         boolean f1 = get(r1);
+  70.           boolean f2 = get(r2);
+  71.           return Boolean.compare(f1, f2);
+
+
+core/src/test/java/tech/tablesaw/aggregate/AggregateFunctionsTest.java:73: error: NULL_DEREFERENCE
+  object `group.sourceTable` last assigned on line 72 could be null and is dereferenced by call to `aggregate(...)` at line 73.
+  71.       StringColumn byColumn = table.stringColumn("who");
+  72.       TableSliceGroup group = StandardTableSliceGroup.create(table, byColumn);
+  73. >     Table result = group.aggregate("approval", mean, stdDev);
+  74.       assertEquals(3, result.columnCount());
+  75.       assertEquals("who", result.column(0).name());
+
+
+core/src/main/java/tech/tablesaw/io/DataFrameReader.java:73: error: RESOURCE_LEAK
+  resource of type `java.io.FileInputStream` acquired by call to `getInputStream()` at line 73 is not released after line 73.
+  71.   
+  72.     private Table readUrl(URL url, Charset charset, DataReader<?> reader) throws IOException {
+  73. >     return reader.read(new Source(url.openConnection().getInputStream(), charset));
+  74.     }
+  75.   
+
+
+core/src/main/java/tech/tablesaw/io/DataFrameReader.java:73: error: RESOURCE_LEAK
+  resource of type `java.net.HttpURLConnection` acquired by call to `openConnection()` at line 73 is not released after line 73.
+  71.   
+  72.     private Table readUrl(URL url, Charset charset, DataReader<?> reader) throws IOException {
+  73. >     return reader.read(new Source(url.openConnection().getInputStream(), charset));
+  74.     }
+  75.   
+
+
+core/src/test/java/tech/tablesaw/columns/datetimes/PackedLocalDateTimeTest.java:84: error: NULL_DEREFERENCE
+  object `d1` last assigned on line 80 could be null and is dereferenced at line 84.
+  82.       assertNotNull(d1);
+  83.       assertNotNull(t1);
+  84. >     assertEquals(date.toString(), d1.toString());
+  85.     }
+  86.   
+
+
+core/src/main/java/tech/tablesaw/io/DataFrameWriter.java:77: error: RESOURCE_LEAK
+  resource of type `java.io.FileOutputStream` acquired by call to `builder(...)` at line 76 is not released after line 77.
+  75.     public void csv(String file) throws IOException {
+  76.       CsvWriteOptions options = CsvWriteOptions.builder(file).build();
+  77. >     new CsvWriter().write(table, options);
+  78.     }
+  79.   
+
+
+core/src/test/java/tech/tablesaw/api/DateColumnMapTest.java:87: error: NULL_DEREFERENCE
+  object returned by `asLocalDate(day1)` could be null and is dereferenced at line 87.
+  85.       IntColumn months = column1.monthsUntil(column2);
+  86.       IntColumn years = column1.yearsUntil(column2);
+  87. >     assertEquals(asLocalDate(day1).until(asLocalDate(day2), ChronoUnit.DAYS), days.getInt(0));
+  88.       assertEquals(asLocalDate(day1).until(asLocalDate(day2), ChronoUnit.WEEKS), weeks.getInt(0));
+  89.       assertEquals(asLocalDate(day1).until(asLocalDate(day2), ChronoUnit.MONTHS), months.getInt(0));
+
+
+core/src/main/java/tech/tablesaw/io/DataFrameWriter.java:82: error: RESOURCE_LEAK
+  resource of type `java.io.FileOutputStream` acquired by call to `builder(...)` at line 81 is not released after line 82.
+  80.     public void csv(File file) throws IOException {
+  81.       CsvWriteOptions options = CsvWriteOptions.builder(file).build();
+  82. >     new CsvWriter().write(table, options);
+  83.     }
+  84.   
+
+
+core/src/test/java/tech/tablesaw/table/TableSliceGroupTest.java:93: error: NULL_DEREFERENCE
+  object `viewList` last assigned on line 90 could be null and is dereferenced at line 93.
+  91.   
+  92.       int count = 0;
+  93. >     for (TableSlice view : viewList) {
+  94.         count += view.rowCount();
+  95.       }
+
+
+core/src/main/java/tech/tablesaw/io/jdbc/SqlResultSetReader.java:105: error: NULL_DEREFERENCE
+  object `type` last assigned on line 97 could be null and is dereferenced at line 105.
+  103.             metaData.getColumnName(i));
+  104.   
+  105. >       Column<?> newColumn = type.create(metaData.getColumnName(i));
+  106.         table.addColumns(newColumn);
+  107.       }
+
+
+saw/src/main/java/tech/tablesaw/io/saw/SawWriter.java:141: error: NULL_DEREFERENCE
+  object returned by `tableMetadata.getColumnMetadataList()` could be null and is dereferenced at line 141.
+  139.         for (int i = 0; i < columns.size(); i++) {
+  140.           Column<?> column = columns.get(i);
+  141. >         String pathString = tableMetadata.getColumnMetadataList().get(i).getId();
+  142.   
+  143.           writerCompletionService.submit(
+
+
+core/src/test/java/tech/tablesaw/io/fixed/FixedWidthReaderTest.java:119: error: RESOURCE_LEAK
+  resource of type `java.io.FileInputStream` acquired by call to `FileInputStream(...)` at line 106 is not released after line 119.
+  117.   
+  118.       Reader reader = new FileReader("../data/fixed_width_missing_values.txt");
+  119. >     ColumnType[] columnTypes = new FixedWidthReader().detectColumnTypes(reader, options);
+  120.       assertArrayEquals(car_types, columnTypes);
+  121.     }
+
+
+core/src/main/java/tech/tablesaw/io/Source.java:116: error: RESOURCE_LEAK
+  resource of type `java.io.FileInputStream` acquired by call to `FileInputStream(...)` at line 111 is not released after line 116.
+**Note**: potential exception at line 112
+  114.           throw new IOException("Was not able to read expected number of bytes");
+  115.         }
+  116. >     } catch (IOException e) {
+  117.         throw new IllegalStateException(e);
+  118.       }
+
+
+core/src/test/java/tech/tablesaw/columns/times/PackedLocalTimeTest.java:112: error: NULL_DEREFERENCE
+  object `time` last assigned on line 111 could be null and is dereferenced at line 112.
+  110.       int pTime = of(7, 18, 32, 232);
+  111.       LocalTime time = asLocalTime(pTime);
+  112. >     assertEquals(time.getLong(ChronoField.NANO_OF_DAY), toNanoOfDay(pTime));
+  113.     }
+  114.   
+
+
+core/src/test/java/tech/tablesaw/table/TableSliceGroupTest.java:116: error: NULL_DEREFERENCE
+  object `group.sourceTable` last assigned on line 115 could be null and is dereferenced by call to `aggregate(...)` at line 116.
+  114.     public void aggregate() {
+  115.       TableSliceGroup group = StandardTableSliceGroup.create(table, table.categoricalColumn("who"));
+  116. >     Table aggregated = group.aggregate("approval", exaggerate);
+  117.       assertEquals(aggregated.rowCount(), group.size());
+  118.     }
+
+
+core/src/main/java/tech/tablesaw/io/DataFrameReader.java:179: error: RESOURCE_LEAK
+  resource of type `java.net.HttpURLConnection` acquired by call to `openConnection()` at line 179 is not released after line 179.
+  177.   
+  178.     public Table csv(URL url) throws IOException {
+  179. >     return readUrl(url, getCharset(url.openConnection().getContentType()), new CsvReader());
+  180.     }
+  181.   
+
+
+core/src/main/java/tech/tablesaw/io/DataFrameReader.java:179: error: RESOURCE_LEAK
+  resource of type `javax.net.ssl.HttpsURLConnection` acquired by call to `openConnection()` at line 179 is not released after line 179.
+  177.   
+  178.     public Table csv(URL url) throws IOException {
+  179. >     return readUrl(url, getCharset(url.openConnection().getContentType()), new CsvReader());
+  180.     }
+  181.   
+
+
+saw/src/main/java/tech/tablesaw/io/saw/SawReader.java:208: error: NULL_DEREFERENCE
+  object `cell` last assigned on line 207 could be null and is dereferenced by call to `append(...)` at line 208.
+  206.                   try {
+  207.                       BaseType cell = (BaseType) readData(metadata.getType(), dis);
+  208. >                     columns.append(cell);
+  209.                   } catch (EOFException e) {
+  210.                       EOF = true;
+
+
+core/src/test/java/tech/tablesaw/api/BooleanColumnTest.java:231: error: NULL_DEREFERENCE
+  object returned by `BooleanColumnTest.column.get((BooleanColumnTest.column.size()-1))` could be null and is dereferenced at line 231.
+  229.     /** Returns true if the last item added to the column is true and false otherwise */
+  230.     private boolean lastEntry() {
+  231. >     return column.get(column.size() - 1);
+  232.     }
+  233.   }
+
+
+core/src/test/java/tech/tablesaw/columns/times/PackedLocalTimeTest.java:276: error: NULL_DEREFERENCE
+  object `t1` last assigned on line 274 could be null and is dereferenced at line 276.
+  274.       LocalTime t1 = asLocalTime(PackedLocalDateTime.time(packed));
+  275.       assertNotNull(t1);
+  276. >     assertEquals(time.getHour(), t1.getHour());
+  277.       assertEquals(time.getMinute(), t1.getMinute());
+  278.       assertEquals(time.getSecond(), t1.getSecond());
+
+
+core/src/test/java/tech/tablesaw/api/RowTest.java:348: error: NULL_DEREFERENCE
+  object `date` last assigned on line 345 could be null and is dereferenced at line 348.
+  346.   
+  347.         // test setDate(index, value)
+  348. >       LocalDate dateIncrementedByOne = date.plusDays(1);
+  349.         row.setDate(0, dateIncrementedByOne);
+  350.         assertEquals(dateIncrementedByOne, row.getDate(0));
+
+
+core/src/main/java/tech/tablesaw/api/BooleanColumn.java:580: error: NULL_DEREFERENCE
+  object returned by `unique.get(i)` could be null and is dereferenced at line 580.
+  578.       BooleanColumn unique = unique();
+  579.       for (int i = 0; i < unique.size(); i++) {
+  580. >       set.add((boolean) unique.get(i));
+  581.       }
+  582.       return set;
+
+
+core/src/main/java/tech/tablesaw/api/BooleanColumn.java:600: error: NULL_DEREFERENCE
+  object returned by `get(row)` could be null and is dereferenced at line 600.
+  598.     public byte[] asBytes(int row) {
+  599.       byte[] result = new byte[byteSize()];
+  600. >     result[0] = (get(row) ? BooleanColumnType.BYTE_TRUE : BooleanColumnType.BYTE_FALSE);
+  601.       return result;
+  602.     }
+
+
+Summary of the reports
+
+
+  NULL_DEREFERENCE: 20
+     RESOURCE_LEAK: 11
